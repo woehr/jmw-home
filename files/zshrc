@@ -1,3 +1,49 @@
+HISTFILE=~/.histfile
+HISTSIZE=1000
+SAVEHIST=1000
+autoload -Uz compinit
+compinit
+export KEYTIMEOUT=1
+
+#-----------------
+#--- key binds ---
+#-----------------
+
+bindkey -v
+
+autoload zkbd
+
+[[ -n ${key[Backspace]} ]] && bindkey "${key[Backspace]}" backward-delete-char
+[[ -n ${key[Insert]} ]] && bindkey "${key[Insert]}" overwrite-mode
+[[ -n ${key[Home]} ]] && bindkey "${key[Home]}" beginning-of-line
+[[ -n ${key[PageUp]} ]] && bindkey "${key[PageUp]}" up-line-or-history
+[[ -n ${key[Delete]} ]] && bindkey "${key[Delete]}" delete-char
+[[ -n ${key[End]} ]] && bindkey "${key[End]}" end-of-line
+[[ -n ${key[PageDown]} ]] && bindkey "${key[PageDown]}" down-line-or-history
+[[ -n ${key[Up]} ]] && bindkey "${key[Up]}" up-line-or-search
+[[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
+[[ -n ${key[Down]} ]] && bindkey "${key[Down]}" down-line-or-search
+[[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
+
+bindkey ';5D' backward-word
+bindkey ';5C' forward-word
+
+
+#---------------
+#--- aliases ---
+#---------------
+
+alias gs="git status"
+alias gd="git diff"
+alias gl="git log"
+
+alias ls="ls -la"
+alias cb="xclip -selection clipboard"
+
+#--------------
+#--- prompt ---
+#--------------
+
 function precmd {
 
     local TERMWIDTH
@@ -141,4 +187,3 @@ $PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$PR_NO_COLOUR '
 }
 
 setprompt
-
