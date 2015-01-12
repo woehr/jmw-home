@@ -11,22 +11,26 @@ Plugin 'gmarik/Vundle.vim'
 " PLUGINS
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-sensible'
-
 Plugin 'altercation/vim-colors-solarized'
-
 Plugin 'scrooloose/syntastic'
-Plugin 'dag/vim2hs'
+Plugin 'Shougo/vimproc.vim'
+
+Plugin 'raichoo/haskell-vim'
+Plugin 'eagletmt/ghcmod-vim'
+Plugin 'eagletmt/neco-ghc'
 Plugin 'pbrisbin/vim-syntax-shakespeare'
+
+Plugin 'wting/rust.vim'
 
 call vundle#end()
 
 " GENERAL JUNK
 filetype plugin indent on
-" Enable search highlighting
+set encoding=utf8
+set ffs=unix,dos,mac
 set hlsearch
-" Instead of failing command, present dialog if unsaved changes
+set incsearch
 set confirm
-" Use F11 to toggle between paste and nopaste
 set pastetoggle=<F11>
 set number
 set tabstop=2
@@ -36,11 +40,24 @@ set expandtab
 set mouse=a
 set colorcolumn=80
 set cmdheight=2
+set ai
+set si
+
+let mapleader = ","
+let g:mapleader = ","
+set tm=2000
+
+augroup haskell
+  autocmd!
+  autocmd FileType haskell map <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>:SyntasticReset<cr>
+  autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+  autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+augroup END
 
 " SOLARIZED
 syntax enable
 set background=dark
-colorschem solarized
+colorscheme solarized
 
 " SYNTASTIC
 set statusline+=%#warningmsg#
@@ -51,4 +68,23 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
+"let g:syntastic_debug = 3
+
+" vim2hs
+let g:haskell_enable_quantification = 1
+let g:haskell_enable_recursivedo = 1
+let g:haskell_enable_arrowsyntax = 1
+let g:haskell_enable_pattern_synonyms = 1
+let g:haskell_enable_typeroles = 1
+
+let g:haskell_indent_if = 3
+let g:haskell_indent_case = 5
+let g:haskell_indent_let = 4
+let g:haskell_indent_where = 6
+let g:haskell_indent_do = 3
+let g:haskell_indent_in = 1
+
+" GhcMod
+nmap <silent> <leader>t :GhcModType<cr>
+nmap <silent> <leader>T :GhcModTypeInsert<cr>
 
