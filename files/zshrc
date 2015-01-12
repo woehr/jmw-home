@@ -1,33 +1,24 @@
 HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
-autoload -Uz compinit
-compinit
+HISTSIZE=1024
+SAVEHIST=1024
 export KEYTIMEOUT=1
+
+autoload colors zsh/terminfo
+autoload -Uz compinit && compinit -i
 
 #-----------------
 #--- key binds ---
 #-----------------
 
-bindkey -v
-
-autoload zkbd
-
-[[ -n ${key[Backspace]} ]] && bindkey "${key[Backspace]}" backward-delete-char
-[[ -n ${key[Insert]} ]] && bindkey "${key[Insert]}" overwrite-mode
-[[ -n ${key[Home]} ]] && bindkey "${key[Home]}" beginning-of-line
-[[ -n ${key[PageUp]} ]] && bindkey "${key[PageUp]}" up-line-or-history
-[[ -n ${key[Delete]} ]] && bindkey "${key[Delete]}" delete-char
-[[ -n ${key[End]} ]] && bindkey "${key[End]}" end-of-line
-[[ -n ${key[PageDown]} ]] && bindkey "${key[PageDown]}" down-line-or-history
-[[ -n ${key[Up]} ]] && bindkey "${key[Up]}" up-line-or-search
-[[ -n ${key[Left]} ]] && bindkey "${key[Left]}" backward-char
-[[ -n ${key[Down]} ]] && bindkey "${key[Down]}" down-line-or-search
-[[ -n ${key[Right]} ]] && bindkey "${key[Right]}" forward-char
-
-bindkey ';5D' backward-word
-bindkey ';5C' forward-word
-
+# Yeah, hard coded is not nice.
+# Why on earth doesn't zkbd or terminfo work then
+#bindkey -v
+bindkey '^[OH' beginning-of-line
+bindkey '^[OF' end-of-line
+bindkey '^[[1;5D' backward-word
+bindkey '^[[1;5C' forward-word
+bindkey '^r' history-incremental-search-backward
+bindkey '^w' backward-kill-word
 
 #---------------
 #--- aliases ---
@@ -37,7 +28,7 @@ alias gs="git status"
 alias gd="git diff"
 alias gl="git log"
 
-alias ls="ls -la"
+alias ls="ls -a"
 alias cb="xclip -selection clipboard"
 
 #--------------
@@ -96,7 +87,6 @@ setprompt () {
     ###
     # See if we can use colors.
 
-    autoload colors zsh/terminfo
     if [[ "$terminfo[colors]" -ge 8 ]]; then
   colors
     fi
@@ -187,3 +177,4 @@ $PR_CYAN$PR_SHIFT_IN$PR_HBAR$PR_SHIFT_OUT$PR_NO_COLOUR '
 }
 
 setprompt
+

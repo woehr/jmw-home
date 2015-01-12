@@ -2,33 +2,32 @@
 
 set nocompatible
 filetype off
+
+" VUNDLE
 set rtp+=~/repos/Vundle.vim
 call vundle#begin()
 Plugin 'gmarik/Vundle.vim'
 
-" LIST PLUGINS HERE
+" PLUGINS
 Plugin 'tpope/vim-unimpaired'
 Plugin 'tpope/vim-sensible'
+
+Plugin 'altercation/vim-colors-solarized'
+
 Plugin 'scrooloose/syntastic'
 Plugin 'dag/vim2hs'
-Plugin 'altercation/vim-colors-solarized'
-let g:syntastic_always_populate_loc_list=1
+Plugin 'pbrisbin/vim-syntax-shakespeare'
 
-" VUNDLE CLEANUP    
 call vundle#end()
 
+" GENERAL JUNK
 filetype plugin indent on
-
-syntax enable
-set background=dark
-colorschem solarized
-
 " Enable search highlighting
 set hlsearch
 " Instead of failing command, present dialog if unsaved changes
 set confirm
 " Use F11 to toggle between paste and nopaste
-set pastetoggle=
+set pastetoggle=<F11>
 set number
 set tabstop=2
 set softtabstop=2
@@ -37,4 +36,19 @@ set expandtab
 set mouse=a
 set colorcolumn=80
 set cmdheight=2
+
+" SOLARIZED
+syntax enable
+set background=dark
+colorschem solarized
+
+" SYNTASTIC
+set statusline+=%#warningmsg#
+set statusline+=%{SyntasticStatuslineFlag()}
+set statusline+=%*
+
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_auto_loc_list = 1
+let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_wq = 0
 
