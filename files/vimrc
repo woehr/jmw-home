@@ -1,0 +1,40 @@
+"http://fluffynukeit.com/setting-up-vim-for-haskell/
+
+set nocompatible
+filetype off
+set rtp+=~/repos/Vundle.vim
+call vundle#begin()
+Plugin 'gmarik/Vundle.vim'
+
+" LIST PLUGINS HERE
+Plugin 'tpope/vim-unimpaired'
+Plugin 'tpope/vim-sensible'
+Plugin 'scrooloose/syntastic'
+Plugin 'dag/vim2hs'
+Plugin 'altercation/vim-colors-solarized'
+let g:syntastic_always_populate_loc_list=1
+
+" VUNDLE CLEANUP    
+call vundle#end()
+
+filetype plugin indent on
+
+syntax enable
+set background=dark
+colorschem solarized
+
+" Enable search highlighting
+set hlsearch
+" Instead of failing command, present dialog if unsaved changes
+set confirm
+" Use F11 to toggle between paste and nopaste
+set pastetoggle=
+set number
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set expandtab
+set mouse=a
+set colorcolumn=80
+set cmdheight=2
+
