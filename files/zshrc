@@ -6,6 +6,8 @@ export KEYTIMEOUT=1
 autoload colors zsh/terminfo
 autoload -Uz compinit && compinit -i
 
+export NIX_PATH=/home/jordan/repos/nixpkgs:nixpkgs=/home/jordan/repos/nixpkgs:nixos-config=/etc/nixos/configuration.nix
+
 #-----------------
 #--- key binds ---
 #-----------------
