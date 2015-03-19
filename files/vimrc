@@ -1,31 +1,40 @@
 "http://fluffynukeit.com/setting-up-vim-for-haskell/
+set nocompatible | filetype indent plugin on | syn on
 
-set nocompatible
-filetype off
+fun! SetupVAM()
+  let c = get(g:, 'vim_addon_manager', {})
+  let g:vim_addon_manager = c
+  let c.plugin_root_dir = expand('$HOME', 1) . '/.vim/vim-addons'
 
-" VUNDLE
-set rtp+=~/repos/Vundle.vim
-call vundle#begin()
-Plugin 'gmarik/Vundle.vim'
+  " Force your ~/.vim/after directory to be last in &rtp always:
+  " let g:vim_addon_manager.rtp_list_hook = 'vam#ForceUsersAfterDirectoriesToBeLast'
 
-" PLUGINS
-Plugin 'tpope/vim-unimpaired'
-Plugin 'tpope/vim-sensible'
-Plugin 'altercation/vim-colors-solarized'
-Plugin 'scrooloose/syntastic'
-Plugin 'Shougo/vimproc.vim'
+  " most used options you may want to use:
+  " let c.log_to_buf = 1
+  let c.auto_install = 1
+  let &rtp.=(empty(&rtp)?'':',').c.plugin_root_dir.'/vim-addon-manager'
+  if !isdirectory(c.plugin_root_dir.'/vim-addon-manager/autoload')
+    execute '!git clone --depth=1 git://github.com/MarcWeber/vim-addon-manager '
+        \       shellescape(c.plugin_root_dir.'/vim-addon-manager', 1)
+  endif
 
-Plugin 'raichoo/haskell-vim'
-Plugin 'eagletmt/ghcmod-vim'
-Plugin 'eagletmt/neco-ghc'
-Plugin 'pbrisbin/vim-syntax-shakespeare'
+  " This provides the VAMActivate command, you could be passing plugin names, too
+  call vam#ActivateAddons([ 'github:tpope/vim-unimpaired'
+        \                 , 'github:tpope/vim-sensible'
+        \                 , 'github:altercation/vim-colors-solarized'
+        \                 , 'github:scrooloose/syntastic'
+        \                 , 'github:Shougo/vimproc.vim'
+        \                 , 'github:raichoo/haskell-vim'
+        \                 , 'github:eagletmt/ghcmod-vim'
+        \                 , 'github:eagletmt/neco-ghc'
+        \                 , 'github:pbrisbin/vim-syntax-shakespeare'
+        \                 , 'github:wting/rust.vim'
+        \                 , 'github:MarcWeber/vim-addon-nix'
+        \                 ], {})
+endfun
+call SetupVAM()
 
-Plugin 'wting/rust.vim'
 
-call vundle#end()
-
-" GENERAL JUNK
-filetype plugin indent on
 set encoding=utf8
 set ffs=unix,dos,mac
 set hlsearch
