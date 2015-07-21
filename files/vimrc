@@ -23,14 +23,14 @@ fun! SetupVAM()
         \                 , 'github:tpope/vim-sensible'
         \                 , 'github:altercation/vim-colors-solarized'
         \                 , 'github:scrooloose/syntastic'
-        \                 , 'github:Shougo/vimproc.vim'
         \                 , 'github:raichoo/haskell-vim'
-        \                 , 'github:eagletmt/ghcmod-vim'
         \                 , 'github:eagletmt/neco-ghc'
         \                 , 'github:pbrisbin/vim-syntax-shakespeare'
         \                 , 'github:wting/rust.vim'
         \                 , 'github:MarcWeber/vim-addon-nix'
         \                 ], {})
+"        \                 , 'github:Shougo/vimproc.vim'
+"        \                 , 'github:eagletmt/ghcmod-vim'
 endfun
 call SetupVAM()
 
