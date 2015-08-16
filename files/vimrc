@@ -22,18 +22,18 @@ fun! SetupVAM()
   call vam#ActivateAddons([ 'github:tpope/vim-unimpaired'
         \                 , 'github:tpope/vim-sensible'
         \                 , 'github:altercation/vim-colors-solarized'
+        \                 , 'github:bling/vim-airline'
         \                 , 'github:scrooloose/syntastic'
         \                 , 'github:raichoo/haskell-vim'
-        \                 , 'github:eagletmt/neco-ghc'
         \                 , 'github:pbrisbin/vim-syntax-shakespeare'
         \                 , 'github:wting/rust.vim'
-        \                 , 'github:MarcWeber/vim-addon-nix'
+        \                 , 'github:Shougo/vimproc.vim'
+        \                 , 'github:Shougo/neocomplete.vim'
+        \                 , 'github:eagletmt/ghcmod-vim'
+        \                 , 'github:eagletmt/neco-ghc'
         \                 ], {})
-"        \                 , 'github:Shougo/vimproc.vim'
-"        \                 , 'github:eagletmt/ghcmod-vim'
 endfun
 call SetupVAM()
-
 
 set encoding=utf8
 set ffs=unix,dos,mac
@@ -57,10 +57,17 @@ let g:mapleader = ","
 set tm=2000
 
 augroup haskell
+  nmap <silent> <leader>ht :GhcModType<CR>
+  nmap <silent> <leader>hh :GhcModTypeClear<CR>
+  nmap <silent> <leader>hT :GhcModTypeInsert<CR>
+  nmap <silent> <leader>hc :SyntasticCheck ghc_mod<CR>:lopen<CR>
+  nmap <silent> <leader>hl :SyntasticCheck hlint<CR>:lopen<CR>
+
+  setlocal omnifunc=necoghc#omnifunc
+
   autocmd!
-  autocmd FileType haskell map <silent> <leader><cr> :noh<cr>:GhcModTypeClear<cr>:SyntasticReset<cr>
-  autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
-  autocmd BufWritePost *.hs GhcModCheckAndLintAsync
+  " Auto-checking on writing
+  autocmd BufWritePost *.hs,*.lhs GhcModCheckAndLintAsync
 augroup END
 
 " SOLARIZED
@@ -73,11 +80,20 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
+let g:syntastic_mode_map={'mode': 'active', 'passive_filetypes': ['haskell']}
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_auto_loc_list = 1
 let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 "let g:syntastic_debug = 3
+
+" Neocomplete
+let g:neocomplete#enable_at_startup = 1
+let g:neocomplete#enable_smart_case = 1
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+
+" Necoghc
+let g:necoghc_enable_detailed_browse = 1
 
 " vim2hs
 let g:haskell_enable_quantification = 1
@@ -92,8 +108,4 @@ let g:haskell_indent_let = 4
 let g:haskell_indent_where = 6
 let g:haskell_indent_do = 3
 let g:haskell_indent_in = 1
-
-" GhcMod
-nmap <silent> <leader>t :GhcModType<cr>
-nmap <silent> <leader>T :GhcModTypeInsert<cr>
 
