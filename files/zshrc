@@ -17,8 +17,8 @@ export NIX_PATH=/home/jordan/repos/nixpkgs:nixpkgs=/home/jordan/repos/nixpkgs:ni
 #bindkey -v
 #bindkey '^[OH' beginning-of-line
 #bindkey '^[OF' end-of-line
-#bindkey '^[[1;5D' backward-word
-#bindkey '^[[1;5C' forward-word
+bindkey '^[Od' backward-word
+bindkey '^[Oc' forward-word
 bindkey '^r' history-incremental-search-backward
 bindkey '^w' backward-kill-word
 
