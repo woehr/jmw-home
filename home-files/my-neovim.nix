@@ -21,6 +21,15 @@ let
       };
       dependencies = [];
     };
+    vim-airline-themes = buildVimPluginFrom2Nix {
+      name = "vim-airline-themes";
+      src = fetchgit {
+        url = "https://github.com/vim-airline/vim-airline-themes";
+        rev = "b0fca80555b8249f3c62271b7635542a7de22363";
+        sha256 = "1ap7b7v1v3n4hpnj2w24w0dli2sliphvpyfhkdbhbq4c30znm1pk";
+      };
+      dependencies = [];
+    };
     vim-angr = buildVimPluginFrom2Nix {
       name = "vim-angr";
       src = fetchgit {
@@ -170,8 +179,6 @@ let
 
       """"""""""""""" vimtex completion (deoplete) """""""""""""""
       let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
-
-      so ~/.vimrc
     '';
 
     vam.knownPlugins = pkgs.vimPlugins // extraPlugins;

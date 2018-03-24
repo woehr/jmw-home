@@ -23,13 +23,6 @@ let
       inherit xmobar-config xmobar-title-color xmobar-workspace-color;
     });
 
-  my-overlay = (self: super: {
-    my = {
-      emacs = import ./my-emacs.nix { pkgs = self; };
-      neovim = import ./my-neovim.nix { pkgs = self; };
-    };
-  });
-
 in {
 
   nixpkgs = {
