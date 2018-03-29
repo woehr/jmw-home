@@ -13,15 +13,18 @@ let
   xmobar-workspace-color = "#CEFFAC";
 
   # Config files as nix functions
-  xrdb-config = writeText "xrdb.conf"
-    (import ./home-files/xrdb.conf.nix { font = xft-font; });
-  xmobar-config = writeText "xmobar.conf"
-    (import ./home-files/xmobar.conf.nix { font = xft-font; });
-  xmonad-config = writeText "xmonad.hs"
-    (import ./home-files/xmonad.hs.nix {
-      inherit pkgs; follow-mouse = xmonad-follow-mouse;
-      inherit xmobar-config xmobar-title-color xmobar-workspace-color;
-    });
+  xrdb-config = writeText "xrdb.conf" (import ./home-files/xrdb.conf.nix {
+    font = xft-font;
+  });
+  xmobar-config = writeText "xmobar.conf" (import ./home-files/xmobar.conf.nix {
+    font = xft-font;
+  });
+  xmonad-config = writeText "xmonad.hs" (import ./home-files/xmonad.hs.nix {
+    inherit pkgs; follow-mouse = xmonad-follow-mouse;
+    inherit xmobar-config xmobar-title-color xmobar-workspace-color;
+  });
+  zathura-config = writeText "zathurarc" (import ./home-files/zathurarc.nix {
+  });
 
 in {
 
@@ -32,11 +35,21 @@ in {
 
   xdg.configFile."nixpkgs/config.nix".source = ./home-files/nixpkgs-config.nix;
   xdg.configFile."nixpkgs/overlays.nix".source = ./home-files/overlays.nix;
+  xdg.configFile."zathura/zathurarc".source = zathura-config;
 
   home = {
-    packages = [
-      pkgs.my.emacs
-      pkgs.my.neovim
+    packages = with pkgs; [
+      # My custom packages
+      (import ./home-files/my-emacs.nix { inherit pkgs; })
+      (import ./home-files/my-neovim.nix { inherit pkgs; })
+
+      # Unmodified packages (unless modified in overlay?)
+      shellcheck
+      # Included by vimrc, but be explicit in case it changes
+      zathura
+      # For zathura to work nicely with Vimtex
+      xdotool
+
     ];
     sessionVariables = {
       HM_HOME = https://github.com/rycee/home-manager/archive/master.tar.gz;

@@ -171,11 +171,7 @@ let
       let g:vimtex_compiler_progname = '${pkgs.neovim-remote}/bin/nvr'
 
       let g:vimtex_view_method = 'zathura'
-      let g:vimtex_view_general_viewer = 'zathura'
-
-      "let g:vimtex_view_general_viewer = '${pkgs.okular}/bin/okular'
-      "let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
-      "let g:vimtex_view_general_options_latexmk = '--unique'
+      let g:vimtex_view_general_viewer = '${pkgs.zathura}'
 
       """"""""""""""" vimtex completion (deoplete) """""""""""""""
       let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete

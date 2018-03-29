@@ -1,6 +1,5 @@
 [(self: super: {
-  my = {
-    neovim = import ./my-neovim.nix { pkgs = self; };
-    emacs = import ./my-emacs.nix { pkgs = self; };
-  };
+  # synctexSupport is currently the default but make sure that
+  # doesn't change
+  zathura = super.zathura.override { synctexSupport = true;};
 })]
