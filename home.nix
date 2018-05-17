@@ -6,13 +6,15 @@ let
   xft-font = "Dejavu Sans Mono";
 
   # xmonad configuration values
-  xmonad-follow-mouse = false;
+  xmonad-follow-mouse = true;
 
   # xmobar configuration values
   xmobar-title-color = "#FFB6B0";
   xmobar-workspace-color = "#CEFFAC";
 
   # Config files as nix functions
+  bazel-config = writeText "bazelrc" (import ./home-files/bazelrc.nix {
+  });
   xrdb-config = writeText "xrdb.conf" (import ./home-files/xrdb.conf.nix {
     font = xft-font;
   });
@@ -38,6 +40,9 @@ in {
   xdg.configFile."zathura/zathurarc".source = zathura-config;
 
   home = {
+    file = {
+      ".bazelrc".source = bazel-config;
+    };
     packages = with pkgs; [
       # My custom packages
       (import ./home-files/my-emacs.nix { inherit pkgs; })
@@ -49,25 +54,37 @@ in {
       zathura
       # For zathura to work nicely with Vimtex
       xdotool
-
     ];
     sessionVariables = {
-      HM_HOME = https://github.com/rycee/home-manager/archive/master.tar.gz;
+      HM_PATH = https://github.com/rycee/home-manager/archive/master.tar.gz;
+      NIX_PATH = "nixpkgs=/home/jordan/.nix-defexpr/nixpkgs/:nixos-config=/etc/nixos/configuration.nix";
     };
   };
 
   programs = {
     home-manager = {
       enable = true;
-      path = "\$HM_HOME";
+      path = "\$HM_PATH";
     };
     bash = {
       enable = true;
       shellAliases = {
         cb = "xclip -selection c";
         gd = "git diff";
+        gl = "git log";
         gs = "git status";
+        ll = "ls -lAh";
       };
+      historyControl = [ "ignoredups" ];
+      historyIgnore = [ "ls" "ll" "exit" ];
+      initExtra = ''
+        # alt
+        bind '"\e[1;3C":forward-word'
+        bind '"\e[1;3D":backward-word'
+        # shift
+        bind '"\e[1;2C":forward-word'
+        bind '"\e[1;2D":backward-word'
+      '';
     };
   };
 

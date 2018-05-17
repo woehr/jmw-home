@@ -3,10 +3,24 @@ let
   inherit (pkgs) fetchgit stdenv;
   inherit (pkgs.vimUtils) buildVimPluginFrom2Nix;
   extraPlugins = {
+    neco-ghc = buildVimPluginFrom2Nix {
+      name = "neco-ghc";
+      src = /home/jordan/repos/neco-ghc;
+      dependencies = [];
+    };
+    lbnf = buildVimPluginFrom2Nix {
+      name = "lbnf";
+      src = fetchgit {
+        url = "https://github.com/vim-scripts/lbnf.vim";
+        rev = "6dabe6deb6369b608ca06f142c51cf8ce1ed5220";
+        sha256 = "0csr3m9ipy1ix5zl97rgp87pg810rkm1r7mzffq15sxcl012vi1h";
+      };
+      dependencies = [];
+    };
     neco-look = buildVimPluginFrom2Nix {
       name = "neco-look";
       src = fetchgit {
-        url = "git://github.com/ujihisa/neco-look";
+        url = "https://github.com/ujihisa/neco-look";
         rev = "ff3de2731177694d0e85f1227b6cfd51c8e2bc8d";
         sha256 = "0zpny9sj7alzsbrjbph71b44zf575hij1ky8pwgba0ygp2p2fxd4";
       };
@@ -57,6 +71,10 @@ let
       set ignorecase
       set smartcase
 
+      " Nice tab completion behaviour
+      set wildmode=longest,list,full
+      set wildmenu
+
       " nvim will interact with the system clipboard
       set clipboard+=unnamedplus
 
@@ -86,12 +104,29 @@ let
       " Remap ESC to exit terminal mode
       tnoremap <Esc> <C-\><C-n>
 
+      " ctrl-d and ctrl-u for page up/down in the popup menu
+      inoremap <expr> <C-d> pumvisible() ? "\<PageDown>\<C-p>\<C-n>" : "\<C-d>"
+      inoremap <expr> <C-u> pumvisible() ? "\<PageUp>\<C-p>\<C-n>" : "\<C-u>"
+
+      " Alt-arrow to switch windows
+      nnoremap <silent> <A-Right> <C-w>l
+      nnoremap <silent> <A-Left> <C-w>h
+      nnoremap <silent> <A-Up> <C-w>k
+      nnoremap <silent> <A-Down> <C-w>j
+
+      " Shift-arrow to move windows
+      nnoremap <silent> <S-Right> <C-w>L
+      nnoremap <silent> <S-Left> <C-w>H
+      nnoremap <silent> <S-Up> <C-w>K
+      nnoremap <silent> <S-Down> <C-w>J
+
+      " Arrow and home/end through wrapped lines
       map <silent> <Up> gk
       imap <silent> <Up> <C-o>gk
       map <silent> <Down> gj
       imap <silent> <Down> <C-o>gj
-      map <silent> <home> g<home>
-      imap <silent> <home> <C-o>g<home>
+      map <silent> <Home> g<Home>
+      imap <silent> <Home> <C-o>g<Home>
       map <silent> <End> g<End>
       imap <silent> <End> <C-o>g<End>
 
@@ -108,9 +143,6 @@ let
 
       """"""""""""""" deoplete """""""""""""""
       let g:deoplete#enable_at_startup = 1
-      if !exists('g:deoplete#omni#input_patterns')
-        let g:deoplete#omni#input_patterns = {}
-      endif
 
       """"""""""""""" fzf.vim """""""""""""""
       let g:fzf_command_prefix = 'FZF'
@@ -127,12 +159,19 @@ let
 
       let g:haskell_indent_disable = 1
 
+      let g:necoghc_enable_detailed_browse = 1
+
+      " Disable haskell-vim omnifunc
+      let g:haskellmode_completion_ghc = 0
+      autocmd FileType haskell setlocal omnifunc=necoghc#omnifunc
+
+      let g:ghcmod_ghc_options = [ '-ilib', '-isrc', '-itest' ]
+
       """"""""""""""" ALE """""""""""""""
       let g:ale_linters = {
       \ 'haskell': ['hdevtools', 'hlint'],
       \ 'tex': ['chktex'],
       \}
-      let g:ale_haskell_hdevtools_options = ""
 
       let g:ale_sign_column_always = 1
       let g:airline#extensions#ale#enabled = 1
@@ -149,6 +188,9 @@ let
         " Stop the hdevtools server on quit
         autocmd VimLeave *.hs !hdevtools --stop-server
       augroup END
+
+      au FileType haskell nnoremap <buffer> <leader>t :HdevtoolsType<CR>
+      au FileType haskell nnoremap <buffer> <silent> <leader>ct :HdevtoolsClear<CR>
 
       """"""""""""""" neovim-ghci """""""""""""""
       augroup ghciMaps
@@ -173,28 +215,34 @@ let
       let g:vimtex_view_method = 'zathura'
       let g:vimtex_view_general_viewer = '${pkgs.zathura}'
 
-      """"""""""""""" vimtex completion (deoplete) """""""""""""""
+      if !exists('g:deoplete#omni#input_patterns')
+        let g:deoplete#omni#input_patterns = {}
+      endif
       let g:deoplete#omni#input_patterns.tex = g:vimtex#re#deoplete
     '';
 
     vam.knownPlugins = pkgs.vimPlugins // extraPlugins;
     vam.pluginDictionaries = [
-      { names = [
-        "ale"
-        "deoplete-nvim"
-        "fzfWrapper"
-        "fzf-vim"
-        "haskell-vim"
-        "neco-look"
-        "neovim-ghci"
-        "vimtex"
-        "vim-airline"
-        "vim-airline-themes"
-        "vim-angr"
-        "vim-nix"
-        "vim-startify"
-        "vim-stylish-haskell"
-        ]; }
+      { names =
+        [ "ale"
+          "deoplete-nvim"
+          "fzfWrapper"
+          "fzf-vim"
+          "haskell-vim"
+          "lbnf"
+          "neco-ghc"
+          "neco-look"
+          "neovim-ghci"
+          "vimtex"
+          "vim-airline"
+          "vim-airline-themes"
+          "vim-angr"
+          "vim-hdevtools"
+          "vim-nix"
+          "vim-startify"
+          "vim-stylish-haskell"
+        ];
+      }
     ];
   };
   my-nvim = pkgs.neovim.override {
