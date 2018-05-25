@@ -3,9 +3,22 @@ let
   inherit (pkgs) fetchgit stdenv;
   inherit (pkgs.vimUtils) buildVimPluginFrom2Nix;
   extraPlugins = {
+    ghcid = buildVimPluginFrom2Nix {
+      name = "ghcid";
+      src = fetchgit {
+        url = "https://github.com/ndmitchell/ghcid";
+        rev = "af50233049183ad6977f8dec8597270a67ab3461";
+        sha256 = "1k43mkk07rpx689aia3b156mpscvnagczvcbjnz5h4prz819r2av";
+      } + "/plugins/nvim";
+      dependencies = [];
+    };
     neco-ghc = buildVimPluginFrom2Nix {
       name = "neco-ghc";
-      src = /home/jordan/repos/neco-ghc;
+      src = fetchgit {
+        url = "https://github.com/eagletmt/neco-ghc";
+        rev = "682869aca5dd0bde71a09ba952acb59c543adf7d";
+        sha256 = "1v7ibi4fp99s4lswz3v0gf4i0h5i5gpj05xpsf4cixwj2zgh206h";
+      };
       dependencies = [];
     };
     lbnf = buildVimPluginFrom2Nix {
@@ -26,15 +39,15 @@ let
       };
       dependencies = [];
     };
-    neovim-ghci = buildVimPluginFrom2Nix {
-      name = "neovim-ghci";
-      src = fetchgit {
-        url = "https://github.com/owickstrom/neovim-ghci";
-        rev = "459c9584f6c816d6d60501ecb5bc746b69e30d0c";
-        sha256 = "0rmxr82b28c1px2vd3qb8671v79dn5bwl890pid0njl1c7dlmmgf";
-      };
-      dependencies = [];
-    };
+#    neovim-ghci = buildVimPluginFrom2Nix {
+#      name = "neovim-ghci";
+#      src = fetchgit {
+#        url = "https://github.com/owickstrom/neovim-ghci";
+#        rev = "459c9584f6c816d6d60501ecb5bc746b69e30d0c";
+#        sha256 = "0rmxr82b28c1px2vd3qb8671v79dn5bwl890pid0njl1c7dlmmgf";
+#      };
+#      dependencies = [];
+#    };
     vim-airline-themes = buildVimPluginFrom2Nix {
       name = "vim-airline-themes";
       src = fetchgit {
@@ -70,6 +83,7 @@ let
       set linebreak
       set ignorecase
       set smartcase
+      set title
 
       " Nice tab completion behaviour
       set wildmode=longest,list,full
@@ -146,6 +160,7 @@ let
 
       """"""""""""""" fzf.vim """""""""""""""
       let g:fzf_command_prefix = 'FZF'
+      command! -bang -nargs=* Ag call fzf#vim#ag(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
 
       """"""""""""""" haskell-vim """""""""""""""
       let g:haskell_classic_highlighting = 1
@@ -192,21 +207,12 @@ let
       au FileType haskell nnoremap <buffer> <leader>t :HdevtoolsType<CR>
       au FileType haskell nnoremap <buffer> <silent> <leader>ct :HdevtoolsClear<CR>
 
-      """"""""""""""" neovim-ghci """""""""""""""
+      """"""""""""""" ghcid """""""""""""""
       augroup ghciMaps
         au!
-        au FileType haskell nnoremap <silent> <leader>gs :GhciStart<CR>
-        au FileType haskell nnoremap <silent> <leader>gk :GhciKill<CR>
-        au FileType haskell nnoremap <silent> <leader>gr :GhciRestart<CR>
-        au FileType haskell nnoremap <silent> <leader>go :GhciOpen<CR><C-W>H
-        au FileType haskell nnoremap <silent> <leader>gh :GhciHide<CR>
-        au FileType haskell nnoremap <silent> <leader>gl :GhciLoadCurrentModule<CR>
-        au FileType haskell nnoremap <silent> <leader>gf :GhciLoadCurrentFile<CR>
-        au BufWritePost *.hs GhciReload
+        au FileType haskell nnoremap <silent> <leader>gf :Ghcid <C-r>%<CR><C-w>H
+        au FileType haskell nnoremap <silent> <leader>gk :GhcidKill<CR>
       augroup END
-
-      let g:ghci_command = 'ghci'
-      let g:ghci_use_neomake = 0
 
       """"""""""""""" vimtex """""""""""""""
       let g:vimtex_enabled = 1
@@ -228,11 +234,12 @@ let
           "deoplete-nvim"
           "fzfWrapper"
           "fzf-vim"
+          "ghcid"
           "haskell-vim"
           "lbnf"
           "neco-ghc"
           "neco-look"
-          "neovim-ghci"
+          #"neovim-ghci"
           "vimtex"
           "vim-airline"
           "vim-airline-themes"

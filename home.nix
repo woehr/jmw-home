@@ -84,6 +84,20 @@ in {
         # shift
         bind '"\e[1;2C":forward-word'
         bind '"\e[1;2D":backward-word'
+
+        # Window title magic
+        # https://www.davidpashley.com/articles/xterm-titles-with-bash/
+        if [[ "$SHELL" == *"/bin/bash" ]]
+        then
+            case $TERM in
+                 rxvt*|*term)
+                    set -o functrace
+                    trap 'echo -ne "\e]0;"; echo -n $BASH_COMMAND; echo -ne "\007"' DEBUG
+                    export PS1="\e]0;$TERM\007$PS1"
+                 ;;
+            esac
+        fi
+
       '';
     };
   };
