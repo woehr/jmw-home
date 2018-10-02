@@ -12,4 +12,15 @@
   };
   pythonPackages = python.pkgs;
 
+  haskell = super.haskell // {
+    packages = super.haskell.packages // {
+      ghc802 = super.haskell.packages.ghc802.override {
+        overrides = hself: hsuper:
+        {
+          concurrent-output = super.haskell.lib.doJailbreak hsuper.concurrent-output;
+        };
+      };
+    };
+  };
+
 })]

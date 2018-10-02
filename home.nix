@@ -7,6 +7,7 @@ let
 
   # xmonad configuration values
   xmonad-follow-mouse = true;
+  xmonad-border-color = "#a40000";
 
   # xmobar configuration values
   xmobar-title-color = "#FFB6B0";
@@ -22,11 +23,30 @@ let
     font = xft-font;
   });
   xmonad-config = writeText "xmonad.hs" (import ./home-files/xmonad.hs.nix {
-    inherit pkgs; follow-mouse = xmonad-follow-mouse;
+    inherit pkgs xmonad-border-color; follow-mouse = xmonad-follow-mouse;
     inherit xmobar-config xmobar-title-color xmobar-workspace-color;
   });
-  zathura-config = writeText "zathurarc" (import ./home-files/zathurarc.nix {
-  });
+
+
+
+  oldpkgsSrc = pkgs.fetchFromGitHub {
+    owner = "nixos";
+    repo = "nixpkgs";
+    rev = "0252e6ca31c98182e841df494e6c9c4fb022c676";
+    sha256 = "1sr5a11sb26rgs1hmlwv5bxynw2pl5w4h5ic0qv3p2ppcpmxwykz";
+  };
+
+  newpkgsSrc = pkgs.fetchFromGitHub {
+    owner = "nixos";
+    repo = "nixpkgs";
+    rev = "1d0a71879dac0226272212df7a2463d8eeb8f75b";
+    sha256 = "0nh6wfw50lx6wkzyiscfqg6fl6rb17wmncj8jsdvbgmsd6rm95rg";
+  };
+
+  oldpkgs = import oldpkgsSrc {};
+  newpkgs = import newpkgsSrc {};
+
+
 
 in {
 
@@ -37,7 +57,6 @@ in {
 
   xdg.configFile."nixpkgs/config.nix".source = ./home-files/nixpkgs-config.nix;
   xdg.configFile."nixpkgs/overlays.nix".source = ./home-files/overlays.nix;
-  xdg.configFile."zathura/zathurarc".source = zathura-config;
 
   home = {
     file = {
@@ -48,16 +67,20 @@ in {
       (import ./home-files/my-emacs.nix { inherit pkgs; })
       (import ./home-files/my-neovim.nix { inherit pkgs; })
 
-      # Unmodified packages (unless modified in overlay?)
+      htop
+      mupdf
+      neovim-remote
       shellcheck
-      # Included by vimrc, but be explicit in case it changes
-      zathura
-      # For zathura to work nicely with Vimtex
+      shfmt
+      unzip
+      wget
       xdotool
     ];
     sessionVariables = {
       HM_PATH = https://github.com/rycee/home-manager/archive/master.tar.gz;
       NIX_PATH = "nixpkgs=/home/jordan/.nix-defexpr/nixpkgs/:nixos-config=/etc/nixos/configuration.nix";
+      LOCALE_ARCHIVE_2_11 = "${oldpkgs.glibcLocales}/lib/locale/locale-archive";
+      LOCALE_ARCHIVE_2_27 = "${newpkgs.glibcLocales}/lib/locale/locale-archive";
     };
   };
 
@@ -86,18 +109,22 @@ in {
         bind '"\e[1;2D":backward-word'
 
         # Window title magic
-        # https://www.davidpashley.com/articles/xterm-titles-with-bash/
-        if [[ "$SHELL" == *"/bin/bash" ]]
-        then
-            case $TERM in
-                 rxvt*|*term)
-                    set -o functrace
-                    trap 'echo -ne "\e]0;"; echo -n $BASH_COMMAND; echo -ne "\007"' DEBUG
-                    export PS1="\e]0;$TERM\007$PS1"
-                 ;;
-            esac
+        # https://unix.stackexchange.com/questions/104018/set-dynamic-window-title-based-on-command-input
+        function settitle () {
+          if [[ -z ''${IN_NIX_SHELL} ]]; then
+            echo -ne "\e]0;"; echo -n $BASH_COMMAND; echo -ne "\007"
+          fi
+        }
+        if [[ "$SHELL" == *"/bin/bash" ]]; then
+          case $TERM in
+            rxvt*|*term)
+            trap 'settitle' DEBUG
+            export PS1="\e]0;$TERM\007$PS1"
+          ;;
+          esac
         fi
 
+        unset LOCALE_ARCHIVE
       '';
     };
   };
@@ -111,6 +138,9 @@ in {
 
   xsession = {
     enable = true;
+    initExtra = ''
+      ${pkgs.feh}/bin/feh --no-fehbg --randomize --bg-center ~/.wallpaper/*
+    '';
     profileExtra = ''
       ${pkgs.numlockx}/bin/numlockx on
       ${pkgs.xlibs.xset}/bin/xset -dpms

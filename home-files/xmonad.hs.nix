@@ -1,5 +1,5 @@
 { pkgs
-, follow-mouse
+, follow-mouse, xmonad-border-color
 , xmobar-config, xmobar-title-color, xmobar-workspace-color
 }:
 ''
@@ -23,6 +23,7 @@
     { modMask = mod1Mask
     , terminal = "urxvt"
     , borderWidth = 2
+    , focusedBorderColor = "${xmonad-border-color}"
     , focusFollowsMouse = ${if follow-mouse then "True" else "False"}
     , layoutHook = let rtall = ResizableTall 1 (1/20) (1/2) []
                        tall  = Tall 1 (1/20) (1/2)
