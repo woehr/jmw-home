@@ -29,22 +29,22 @@ let
 
 
 
-  oldpkgsSrc = pkgs.fetchFromGitHub {
-    owner = "nixos";
-    repo = "nixpkgs";
-    rev = "0252e6ca31c98182e841df494e6c9c4fb022c676";
-    sha256 = "1sr5a11sb26rgs1hmlwv5bxynw2pl5w4h5ic0qv3p2ppcpmxwykz";
-  };
-
-  newpkgsSrc = pkgs.fetchFromGitHub {
-    owner = "nixos";
-    repo = "nixpkgs";
-    rev = "1d0a71879dac0226272212df7a2463d8eeb8f75b";
-    sha256 = "0nh6wfw50lx6wkzyiscfqg6fl6rb17wmncj8jsdvbgmsd6rm95rg";
-  };
-
-  oldpkgs = import oldpkgsSrc {};
-  newpkgs = import newpkgsSrc {};
+#  oldpkgsSrc = pkgs.fetchFromGitHub {
+#    owner = "nixos";
+#    repo = "nixpkgs";
+#    rev = "0252e6ca31c98182e841df494e6c9c4fb022c676";
+#    sha256 = "1sr5a11sb26rgs1hmlwv5bxynw2pl5w4h5ic0qv3p2ppcpmxwykz";
+#  };
+#
+#  newpkgsSrc = pkgs.fetchFromGitHub {
+#    owner = "nixos";
+#    repo = "nixpkgs";
+#    rev = "1d0a71879dac0226272212df7a2463d8eeb8f75b";
+#    sha256 = "0nh6wfw50lx6wkzyiscfqg6fl6rb17wmncj8jsdvbgmsd6rm95rg";
+#  };
+#
+#  oldpkgs = import oldpkgsSrc {};
+#  newpkgs = import newpkgsSrc {};
 
 
 
@@ -67,20 +67,25 @@ in {
       (import ./home-files/my-emacs.nix { inherit pkgs; })
       (import ./home-files/my-neovim.nix { inherit pkgs; })
 
+      haskellPackages.brittany
+      haskellPackages.cabal2nix
+      haskellPackages.hlint
       htop
       mupdf
       neovim-remote
+      isabelle
       shellcheck
       shfmt
       unzip
+      weechat
       wget
       xdotool
     ];
     sessionVariables = {
       HM_PATH = https://github.com/rycee/home-manager/archive/master.tar.gz;
       NIX_PATH = "nixpkgs=/home/jordan/.nix-defexpr/nixpkgs/:nixos-config=/etc/nixos/configuration.nix";
-      LOCALE_ARCHIVE_2_11 = "${oldpkgs.glibcLocales}/lib/locale/locale-archive";
-      LOCALE_ARCHIVE_2_27 = "${newpkgs.glibcLocales}/lib/locale/locale-archive";
+      #LOCALE_ARCHIVE_2_11 = "${oldpkgs.glibcLocales}/lib/locale/locale-archive";
+      #LOCALE_ARCHIVE_2_27 = "${newpkgs.glibcLocales}/lib/locale/locale-archive";
     };
   };
 
@@ -96,7 +101,10 @@ in {
         gd = "git diff";
         gl = "git log";
         gs = "git status";
-        ll = "ls -lAh";
+        glol = "git log --graph --decorate --pretty=oneline --abbrev-commit";
+        glola = "git log --graph --decorate --pretty=oneline --abbrev-commit --all";
+        ll = "ls -lh";
+        la = "ls -lAh";
       };
       historyControl = [ "ignoredups" ];
       historyIgnore = [ "ls" "ll" "exit" ];
