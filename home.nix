@@ -29,24 +29,25 @@ let
 
 
 
-#  oldpkgsSrc = pkgs.fetchFromGitHub {
-#    owner = "nixos";
-#    repo = "nixpkgs";
-#    rev = "0252e6ca31c98182e841df494e6c9c4fb022c676";
-#    sha256 = "1sr5a11sb26rgs1hmlwv5bxynw2pl5w4h5ic0qv3p2ppcpmxwykz";
-#  };
-#
-#  newpkgsSrc = pkgs.fetchFromGitHub {
-#    owner = "nixos";
-#    repo = "nixpkgs";
-#    rev = "1d0a71879dac0226272212df7a2463d8eeb8f75b";
-#    sha256 = "0nh6wfw50lx6wkzyiscfqg6fl6rb17wmncj8jsdvbgmsd6rm95rg";
-#  };
-#
-#  oldpkgs = import oldpkgsSrc {};
-#  newpkgs = import newpkgsSrc {};
+  oldpkgsSrc = pkgs.fetchFromGitHub {
+    owner = "nixos";
+    repo = "nixpkgs";
+    rev = "0252e6ca31c98182e841df494e6c9c4fb022c676";
+    sha256 = "1sr5a11sb26rgs1hmlwv5bxynw2pl5w4h5ic0qv3p2ppcpmxwykz";
+  };
 
+  newpkgsSrc = pkgs.fetchFromGitHub {
+    owner = "nixos";
+    repo = "nixpkgs";
+    rev = "1d0a71879dac0226272212df7a2463d8eeb8f75b";
+    sha256 = "0nh6wfw50lx6wkzyiscfqg6fl6rb17wmncj8jsdvbgmsd6rm95rg";
+  };
 
+  oldpkgs = import oldpkgsSrc {};
+  newpkgs = import newpkgsSrc {};
+
+  my-emacs = import ./home-files/my-emacs.nix { inherit pkgs; };
+  my-nvim = import ./home-files/my-neovim.nix { inherit pkgs; };
 
 in {
 
@@ -64,18 +65,27 @@ in {
     };
     packages = with pkgs; [
       # My custom packages
-      (import ./home-files/my-emacs.nix { inherit pkgs; })
-      (import ./home-files/my-neovim.nix { inherit pkgs; })
+      my-emacs
+      my-nvim
 
-      haskellPackages.brittany
+      awscli
+      chromium
+      gcc
+      #haskellPackages.brittany
       haskellPackages.cabal2nix
       haskellPackages.hlint
       htop
+      isabelle
+      libreoffice
+      nix-prefetch-git
+      plantuml
       mupdf
       neovim-remote
-      isabelle
+      pciutils
+      qdirstat
       shellcheck
       shfmt
+      slack
       unzip
       weechat
       wget
@@ -83,9 +93,9 @@ in {
     ];
     sessionVariables = {
       HM_PATH = https://github.com/rycee/home-manager/archive/master.tar.gz;
-      NIX_PATH = "nixpkgs=/home/jordan/.nix-defexpr/nixpkgs/:nixos-config=/etc/nixos/configuration.nix";
-      #LOCALE_ARCHIVE_2_11 = "${oldpkgs.glibcLocales}/lib/locale/locale-archive";
-      #LOCALE_ARCHIVE_2_27 = "${newpkgs.glibcLocales}/lib/locale/locale-archive";
+      LOCALE_ARCHIVE_2_11 = "${oldpkgs.glibcLocales}/lib/locale/locale-archive";
+      LOCALE_ARCHIVE_2_27 = "${newpkgs.glibcLocales}/lib/locale/locale-archive";
+      EDITOR = "${my-nvim}/bin/nvim";
     };
   };
 
@@ -144,6 +154,33 @@ in {
     };
   };
 
+  systemd.user.sockets.xmobar = {
+    Socket = {
+      ListenFIFO = "/home/jordan/.local/share/xmobar/xmobar.pipe";
+    };
+  };
+
+  systemd.user.services.xmobar = {
+    Unit = {
+      Requires = "xmobar.socket";
+      After = [
+        "xmobar.socket"
+        "graphical-session-pre.target"
+      ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+
+    Service = {
+      ExecStart = "${pkgs.haskellPackages.xmobar}/bin/xmobar ${xmobar-config}";
+      Restart = "always";
+      StandardInput = "fd:xmobar.socket";
+    };
+  };
+
   xsession = {
     enable = true;
     initExtra = ''
@@ -154,6 +191,7 @@ in {
       ${pkgs.xlibs.xset}/bin/xset -dpms
       ${pkgs.xlibs.xset}/bin/xset s off
       ${pkgs.xlibs.xrdb}/bin/xrdb ${xrdb-config}
+      ${pkgs.autocutsel}/bin/autocutsel -s PRIMARY -buttonup -fork
     '';
     windowManager = {
       xmonad = {

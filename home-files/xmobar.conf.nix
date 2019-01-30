@@ -20,7 +20,7 @@
     , overrideRedirect = True
     , commands =
        [ Run MultiCpu
-          [ "-t", "CPU: <total0> <total1>"
+          [ "-t", "CPU: <total0> <total1> <total2> <total3> <total4> <total5> <total6> <total7> <total8> <total9> <total10> <total11> <total12> <total13> <total14> <total15>"
           , "-w", "3"
           ] 10
        , Run Memory
@@ -29,11 +29,13 @@
        , Run DiskU [("/", "/: <used>/<size>")]
           [ "-m", "1"
           ] 10
-       , Run DiskIO [("sda", "sda: <read>, <write>")]
+       , Run DiskIO [("nvme0n1", "nvme0n1: <read>, <write>")]
+       --, Run DiskIO [("sda", "sda: <read>, <write>")]
           [ "-m", "1"
           , "-w", "4"
           ] 10
-       , Run Network "enp0s3"
+       , Run Network "wlp29s0f3u2"
+       --, Run Network "enp0s3
           [ "-t", "Net: <rx>, <tx>"
           , "-S", "True"
           , "-w", "6"
@@ -51,9 +53,10 @@
                  \   [%memory%]\
                  \   [%disku%]\
                  \   [%diskio%]\
-                 \   [%enp0s3%]\
+                 \   [%wlp29s0f3u2%]\
                  \   [%CYYC%]\
                  \   [%date%]\
                  \   "
+                 --   \   [%enp0s3%]\
     }
 ''

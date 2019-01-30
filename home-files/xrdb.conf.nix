@@ -1,5 +1,8 @@
 { font }:
 ''
+  URxvt.iso14755:             false
+  URxvt.iso14755_52:          false
+
   URxvt.font:                 xft:${font}:size=10
   XTerm*faceName:             xft:${font}:size=10
   XTerm*utf8:                 2

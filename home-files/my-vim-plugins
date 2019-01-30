@@ -5,6 +5,7 @@
 "github:LnL7/vim-nix"
 "github:ndmitchell/ghcid"
 "github:neovimhaskell/haskell-vim"
+"github:posva/vim-vue"
 "github:Shougo/deoplete.nvim"
 "github:vim-airline/vim-airline"
 "github:vim-airline/vim-airline-themes"

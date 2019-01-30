@@ -26,6 +26,7 @@ let
       set smartcase
       set title
       set updatetime=1000
+      set fileformat=unix
 
       " Nice tab completion behaviour
       set wildmode=longest,list,full
@@ -138,9 +139,9 @@ let
       \ 'sh': ['shellcheck'],
       \ 'tex': ['chktex'],
       \}
+      """""" \ 'javascript': ['prettier'],
       let g:ale_fixers = {
       \ 'haskell': ['brittany'],
-      \ 'javascript': ['prettier-eslint'],
       \ 'sh': ['shfmt'],
       \ '*': ['remove_trailing_lines', 'trim_whitespace'],
       \}
@@ -188,6 +189,7 @@ let
           "vim-airline"
           "vim-airline-themes"
           "vim-nix"
+          "vim-vue"
         ];
       }
     ];
