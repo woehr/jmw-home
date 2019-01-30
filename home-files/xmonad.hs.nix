@@ -5,6 +5,7 @@
 ''
   import Control.Exception  (SomeException, catch)
   import Data.List          (intercalate)
+  import System.Environment (getEnv)
   import System.IO
   import System.Posix.IO
 
@@ -73,7 +74,8 @@
     in openFdSetOpts fname `catch'` \e -> openFdSetOpts "/dev/null"
 
   main = do
-    xmbInput <- tryOpenFile "/home/jordan/.local/share/xmobar/xmobar.pipe" >>= fdToHandle
+    home <- getEnv "HOME"
+    xmbInput <- tryOpenFile (home ++ "/.local/share/xmobar/xmobar.pipe") >>= fdToHandle
     hSetBuffering xmbInput LineBuffering
 
     xmonad $ ewmh $ baseConfig (mkLogHook xmbInput)

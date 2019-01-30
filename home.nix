@@ -155,8 +155,17 @@ in {
   };
 
   systemd.user.sockets.xmobar = {
+    Unit = {
+      After = [ "graphical-session-pre.target" ];
+      PartOf = [ "graphical-session.target" ];
+    };
+
+    Install = {
+      WantedBy = [ "graphical-session.target" ];
+    };
+
     Socket = {
-      ListenFIFO = "/home/jordan/.local/share/xmobar/xmobar.pipe";
+      ListenFIFO = "%h/.local/share/xmobar/xmobar.pipe";
     };
   };
 
@@ -165,13 +174,7 @@ in {
       Requires = "xmobar.socket";
       After = [
         "xmobar.socket"
-        "graphical-session-pre.target"
       ];
-      PartOf = [ "graphical-session.target" ];
-    };
-
-    Install = {
-      WantedBy = [ "graphical-session.target" ];
     };
 
     Service = {
